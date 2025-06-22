@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   const startBtn = document.getElementById("start-btn");
   const nextBtn = document.getElementById("next-btn");
   const restartBtn = document.getElementById("restart-btn");
@@ -31,10 +31,11 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   ];
 
-  let currentQuestionIndex = 0;
   let score = 0;
+  let currentQuestionIndex = 0;
+  let answered = false;
 
-  startBtn.addEventListener("click", startQuiz);
+  startBtn.addEventListener('click', startQuiz);
 
   nextBtn.addEventListener("click", () => {
     currentQuestionIndex++;
@@ -56,32 +57,66 @@ document.addEventListener("DOMContentLoaded", () => {
     startBtn.classList.add("hidden");
     resultContainer.classList.add("hidden");
     questionContainer.classList.remove("hidden");
+    currentQuestionIndex = 0;
+    score = 0;
     showQuestion();
   }
 
   function showQuestion() {
+    answered = false;
     nextBtn.classList.add("hidden");
-    questionText.textContent = questions[currentQuestionIndex].question;
-    choicesList.innerHTML = ""; //clear previous choices
-    questions[currentQuestionIndex].choices.forEach((choice) => {
+    const currentQuestion = questions[currentQuestionIndex];
+    questionText.textContent = currentQuestion.question;
+    choicesList.innerHTML = "";
+
+    currentQuestion.choices.forEach((choice) => {
       const li = document.createElement("li");
       li.textContent = choice;
-      li.addEventListener("click", () => selectAnswer(choice));
+      li.classList.add("choice");
+      li.tabIndex = 0;
+
+      li.addEventListener("click", () => handleAnswer(li, choice));
+      li.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleAnswer(li, choice);
+        }
+      });
+
       choicesList.appendChild(li);
     });
   }
 
-  function selectAnswer(choice) {
+  function handleAnswer(selectedLi, choice) {
+    if (answered) return; // prevent multiple clicks
+
+    answered = true;
     const correctAnswer = questions[currentQuestionIndex].answer;
+    const choices = choicesList.querySelectorAll("li");
+
+    choices.forEach((li) => {
+      li.classList.add("disabled");
+      if (li.textContent === correctAnswer) {
+        li.classList.add("correct");
+      }
+      if (li !== selectedLi && li.textContent !== correctAnswer) {
+        li.classList.add("dim");
+      }
+    });
+
     if (choice === correctAnswer) {
       score++;
+      selectedLi.classList.add("correct");
+    } else {
+      selectedLi.classList.add("incorrect");
     }
+
     nextBtn.classList.remove("hidden");
   }
 
   function showResult() {
     questionContainer.classList.add("hidden");
     resultContainer.classList.remove("hidden");
-    scoreDisplay.textContent = `${score} out of ${questions.length}`;
+    scoreDisplay.textContent = `You scored ${score} out of ${questions.length}`;
   }
 });

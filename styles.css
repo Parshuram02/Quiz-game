@@ -64,3 +64,40 @@ button:hover {
 .hidden {
   display: none;
 }
+.hidden {
+  display: none;
+}
+
+#choices-list {
+  list-style: none;
+  padding: 0;
+}
+
+.choice {
+  background-color: #232359;
+  padding: 10px;
+  margin: 6px 0;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+.choice:hover {
+  background-color: #1f0101;
+}
+
+.correct {
+  background-color: #50f744;
+}
+
+.incorrect {
+  background-color: #f7c5c5;
+}
+
+.disabled {
+  pointer-events: none;
+}
+
+.dim {
+  opacity: 0;
+}
